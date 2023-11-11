@@ -1,3 +1,4 @@
+const fileManager = require('../repositories/FileManager');
 const type = 'planets';
 
 const planetRepository = {
