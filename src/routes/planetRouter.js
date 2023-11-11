@@ -1,24 +1,15 @@
 const express = require("express");
 const planetRouter = express.Router();
+const planetController = require("../controllers/planetController");
 
-planetRouter.get("/", (req, res) => {
-    res.send("Hello!");
-});
+planetRouter.get("/", planetController.getByName);
 
-planetRouter.get("/:id", (req, res) => {
-    res.send("Hello, world!");
-});
+planetRouter.get("/:id", planetController.get);
 
-planetRouter.post("/", (req, res) => {
-    res.send("Hello, world!");
-});
+planetRouter.post("/", planetController.insert);
 
-planetRouter.put("/:id", (req, res) => {
-    res.send("Hello, world!");
-});
+planetRouter.put("/:id", planetController.update);
 
-planetRouter.delete("/:id", (req, res) => {
-    res.send("Hello, world!");
-});
+planetRouter.delete("/:id", planetController.remove);
 
 module.exports = planetRouter;

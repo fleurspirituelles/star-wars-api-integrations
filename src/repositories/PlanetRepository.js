@@ -21,4 +21,4 @@ const planetRepository = {
     }
 }
 
-export default planetRepository;
+module.exports = planetRepository;
