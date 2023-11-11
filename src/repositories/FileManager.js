@@ -1,5 +1,5 @@
-import fs from "fs";
-import { findInArrayById, findInArrayByName } from "./Util.js";
+const fs = require('fs');
+const util = require('./Util.js');
 
 const path = 'bd.json';
 let bd;
@@ -55,12 +55,12 @@ const fileManager = {
 
     getById: (type, id) => {
         return fileManager.load()
-            .then(() => findInArrayById(bd[type], id));
+            .then(() => util.findInArrayById(bd[type], id));
     },
 
     getByName: (type, name) => {
         return fileManager.load()
-            .then(() => findInArrayByName(bd[type], name));
+            .then(() => util.findInArrayByName(bd[type], name));
     },
 
     add: (type, entity) => {
@@ -96,4 +96,4 @@ const fileManager = {
 
 };
 
-export default fileManager;
+module.exports = fileManager;
