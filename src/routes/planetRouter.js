@@ -2,9 +2,11 @@ const express = require("express");
 const planetRouter = express.Router();
 const planetController = require("../controllers/planetController");
 
-planetRouter.get("/", planetController.getByName);
+planetRouter.get("/", planetController.list);
 
-planetRouter.get("/:id", planetController.get);
+planetRouter.get("/id/:id", planetController.get);
+
+planetRouter.get("/name/:name", planetController.getByName);
 
 planetRouter.post("/", planetController.insert);
 
