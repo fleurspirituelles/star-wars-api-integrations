@@ -3,12 +3,25 @@ const axios = require('axios');
 
 const planetService = {
     insert: async (planet) => {
-        let result = await validatePlanet(planet);
-        if (result.success) {
-            planet.data = result.data;
-            return planetRepository.insert(planet);
+        try {
+            const result = await validatePlanet(planet);
+            if (result.success) {
+                planet.data = result.data;
+                const insertResult = await planetRepository.insert(planet);
+                if (insertResult) {
+                    return { success: true, message: "Planet created successfully!" };
+                } else {
+                    return { success: false, message: "Failed to create planet." };
+                }
+            } else {
+                console.log("Validation failed: ", result.message);
+                return { success: false, message: result.message };
+            }
+        } catch (error) {
+            const customError = new Error(error.message);
+            customError.status = 400;
+            throw customError;
         }
-        throw new Error("Validation failed, planet not found.");
     },
 
     update: async (planet, id) => {
@@ -38,25 +51,31 @@ const planetService = {
             return planetRepository.remove(id);
         return;
     },
-}
+};
 
 async function validatePlanet(planet) {
-    let results = {}
-    //TODO: Check if planet already exists in database.
     if (planet.name && planet.name.trim() !== "") {
-        try {
-            const response = await axios.get(`https://swapi.dev/api/planets/?search=${(planet.name)}`);
-            if (response.data.results.length > 0) {
-                results.data = response.data.results;
-                results.success = true;
-                return results;
+        const existingPlanet = await planetService.getByName(planet.name);
+        if (!existingPlanet || existingPlanet.length === 0) {
+            try {
+                const response = await axios.get(`https://swapi.dev/api/planets/?search=${planet.name}`);
+                if (response.data.results.length > 0) {
+                    return { success: true, data: response.data.results };
+                } else {
+                    return { success: false, message: "SWAPI validation failed: Planet not found." };
+                }
+            } catch (error) {
+                console.error("Error checking SWAPI: ", error);
+                return { success: false, message: "SWAPI validation failed." };
             }
-        } catch (error) {
-            console.error("Error checking SWAPI: ", error);
+        } else {
+            console.log("Planet already exists.");
+            return { success: false, message: "Planet already exists." };
         }
+    } else {
+        console.log("Invalid planet name.");
+        return { success: false, message: "Invalid planet name." };
     }
-    results.success = false;
-    return results;
 }
 
 module.exports = planetService;
