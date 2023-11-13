@@ -10,7 +10,7 @@ planetRouter.get("/name/:name", planetController.getByName);
 
 planetRouter.post("/", planetController.insert);
 
-planetRouter.put("/:id", planetController.update);
+planetRouter.post("/:id", planetController.update);
 
 planetRouter.delete("/:id", planetController.remove);
 
