@@ -3,7 +3,9 @@ const axios = require('axios');
 
 const planetService = {
     insert: async (planet) => {
-        if (await validatePlanet(planet)) {
+        let result = await validatePlanet(planet);
+        if (result.success) {
+            planet.data = result.data;
             return planetRepository.insert(planet);
         }
         throw new Error("Validation failed, planet not found.");
@@ -39,17 +41,22 @@ const planetService = {
 }
 
 async function validatePlanet(planet) {
+    let results = {}
+    //TODO: Check if planet already exists in database.
     if (planet.name && planet.name.trim() !== "") {
         try {
-            const response = await axios.get(`https://swapi.dev/api/planets/?search=${encodeURIComponent(planet.name)}`);
+            const response = await axios.get(`https://swapi.dev/api/planets/?search=${(planet.name)}`);
             if (response.data.results.length > 0) {
-                return true;
+                results.data = response.data.results;
+                results.success = true;
+                return results;
             }
         } catch (error) {
-            console.error("Error checking SWAPI:", error);
+            console.error("Error checking SWAPI: ", error);
         }
     }
-    return false;
+    results.success = false;
+    return results;
 }
 
 module.exports = planetService;
