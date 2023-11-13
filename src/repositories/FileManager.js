@@ -5,7 +5,6 @@ const path = 'bd.json';
 let bd;
 
 const fileManager = {
-
     open: () => {
         return new Promise((resolve, reject) => {
             if (fs.existsSync(path)) {
@@ -49,35 +48,40 @@ const fileManager = {
     },
 
     getAll: (type) => {
-        return fileManager.load()
-            .then(() => bd[type]);
+        return fileManager.load().then(() => bd[type]);
     },
 
     getById: (type, id) => {
-        return fileManager.load()
-            .then(() => util.findInArrayById(bd[type], id));
+        return fileManager.load().then(() => util.findInArrayById(bd[type], id));
     },
 
     getByName: (type, name) => {
-        return fileManager.load()
-            .then(() => util.findInArrayByName(bd[type], name));
+        return fileManager.load().then(() => util.findInArrayByName(bd[type], name));
     },
 
     add: (type, entity) => {
         return fileManager.load()
             .then(() => {
-                let id = bd[type].length.toString();
-                entity.id = id;
+                const idFromUrl = entity.url.match(/\/(\d+)\/$/);
+                entity.id = idFromUrl ? idFromUrl[1] : null;
                 bd[type].push(entity);
+                console.log(`Entity added: ${JSON.stringify(entity)}`);
                 return fileManager.save();
             })
-            .then(() => true);
+            .then(() => {
+                console.log('Data saved successfully!');
+                return true;
+            })
+            .catch(error => {
+                console.error('Error during save: ', error);
+                return false;
+            });
     },
 
     update: (type, entity) => {
         return fileManager.load()
             .then(() => {
-                let position = findPositionInArrayById(bd[type], entity.id);
+                let position = util.findPositionInArrayById(bd[type], entity.id);
                 bd[type][position] = entity;
                 return fileManager.save();
             })
@@ -87,13 +91,12 @@ const fileManager = {
     remove: (type, id) => {
         return fileManager.load()
             .then(() => {
-                let position = findPositionInArrayById(bd[type], id);
+                let position = util.findPositionInArrayById(bd[type], id);
                 bd[type].splice(position, 1);
                 return fileManager.save();
             })
             .then(() => true);
     }
-
 };
 
 module.exports = fileManager;
