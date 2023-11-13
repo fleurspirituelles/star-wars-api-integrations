@@ -30,7 +30,7 @@ const fileManager = {
             if (fs.existsSync(path)) {
                 fs.writeFile(path, JSON.stringify(bd), (err) => {
                     if (err) {
-                        console.log("Could not save database.", err);
+                        console.log("Could not save database. ", err);
                         reject(err);
                     } else {
                         console.log("Database saved successfully!");
